@@ -1,6 +1,5 @@
 #include <inttypes.h>
 #include <Arduino.h>
-#include "chinese.h"
 #include "FS.h"
 #include "SPIFFS.h"
 

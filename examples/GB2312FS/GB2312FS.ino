@@ -22,9 +22,6 @@
 #include "gbkstr.h"
 #define FORMAT_SPIFFS_IF_FAILED true
 
-void writeGBK(fs::FS &fs, const char *path, uint16_t x, uint16_t y, uint16_t W, const char *g, uint8_t len);
-uint32_t getGBKIndex(uint16_t gbk);
-
 TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
 
 #define TFT_GREY 0x5AEB // New colour
@@ -62,7 +59,9 @@ void loop()
       iii = gb1[(2 * i)];
       iii <<= 8;
       iii |= gb1[(2 * i) + 1];
-      tft.drawBitmap((i * 16), (j*16), hz.getCharXBM(iii), 16, 16, 0xffff);
+      uint16_t fg = random(0xffff);
+      uint16_t bg = random(0xffff);
+      tft.drawBitmap((i * 16), (j*16), hz.getCharXBM(iii), 16, 16, fg,bg);
     }
   }
 
@@ -72,6 +71,6 @@ void loop()
   // {
   //   writeGBK(SPIFFS, "/chineseSong.bin", 0, (j * 16), 16, gb1, 10);
   // }
-delay(100);
-  tft.fillScreen(0x0000);
+delay(200);
+  //tft.fillScreen(0x0000);
 }
