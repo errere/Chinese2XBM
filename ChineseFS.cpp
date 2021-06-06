@@ -4,7 +4,7 @@ void ChineseFS::init(fs::FS *f)
 {
     _fs = f;
 }
-uint8_t *ChineseFS::getCharXBM(uint16_t gbk)
+uint8_t *ChineseFS::getCharBM(uint16_t gbk)
 {
     _file.seek(getGBKIndex(gbk));
     _file.read(cram, 32);
@@ -13,13 +13,76 @@ uint8_t *ChineseFS::getCharXBM(uint16_t gbk)
 
 uint8_t ChineseFS::openCharSet(const char *path)
 {
-    _file = _fs->open(path,"r");
+    _file = _fs->open(path, "r");
     return 0;
 }
 uint8_t ChineseFS::closeCharSet()
 {
     _file.close();
     return 0;
+}
+
+/*==========================gbk only api============================*/
+
+//gbk
+void ChineseFS::printGBK(uint16_t gb)
+{
+    if (Cur_x + 16 > LCD_W)
+    {
+        Cur_x = 0;
+        Cur_y += 16;
+    }
+    if (allowBM)
+    {
+        _lcdDrawBM(Cur_x, Cur_y, 16, 16, getCharBM(gb), _c);
+    }
+    else
+    {
+        drawBitmap(Cur_x, Cur_y, getCharBM(gb), 16, 16, _c.fg, _c.bg);
+    }
+    Cur_x += (AsciiDY > 16) ? AsciiDY : 16;
+}
+//x,y,gbk
+void ChineseFS::printGBK(int16_t x, int16_t y, uint16_t gb)
+{
+    if (allowBM)
+    {
+        _lcdDrawBM(x, y, 16, 16, getCharBM(gb), _c);
+    }
+    else
+    {
+        drawBitmap(x, y, getCharBM(gb), 16, 16, _c.fg, _c.bg);
+    }
+}
+
+void ChineseFS::printString(const char *c)
+{
+    while (*c)
+    {
+        uint8_t tmp = *c;
+        if (tmp < 0xa1)
+        {
+            if (allowDrawASC == true)
+            {
+                _lcdDrawAsc(Cur_x, Cur_y, tmp, _c);
+                Cur_x += AsciiDX;
+            }
+            c++;
+        } //if<a1
+        else
+        {
+            uint16_t gb16 = (tmp << 8);
+            c++;
+            gb16 |= *c;
+            printGBK(gb16);
+            c++;
+        } //else
+    }     //while
+}
+
+void ChineseFS::printString(String c)
+{
+    printString(c.c_str());
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -107,3 +170,22 @@ uint32_t ChineseFS::getGBKIndex(uint16_t gbk)
 
     return 0;
 }
+
+void ChineseFS::drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bgcolor)
+{
+
+    int32_t i, j, byteWidth = (w + 7) / 8;
+
+    for (j = 0; j < h; j++)
+    {
+        for (i = 0; i < w; i++)
+        {
+            if (pgm_read_byte(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7)))
+                _lcdDrawPixel(x + i, y + j, color);
+            else
+                _lcdDrawPixel(x + i, y + j, bgcolor);
+        }
+    }
+}
+
+///////////eof//////////

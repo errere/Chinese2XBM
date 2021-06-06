@@ -6,10 +6,16 @@
 #define BYTE_EACH_ROW 2
 #define COL_NUMBER 16
 
+typedef struct
+{
+    uint16_t fg;
+    uint16_t bg;
+} ChineseColor_t;
+
 class ChineseFS
 {
 private:
-    const uint8_t symoffset[9]  = {
+    const uint8_t symoffset[9] = {
         0, //a1
         1, //2
         2, //3
@@ -21,7 +27,7 @@ private:
         11 //a9
     };
 
-    const uint16_t gbkCharSetOffset[84]  = {
+    const uint16_t gbkCharSetOffset[84] = {
         //a1...a9
         //0
         0,
@@ -126,15 +132,90 @@ private:
 
     uint32_t getGBKIndex(uint16_t gbk);
 
+    void drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bgcolor);
+
     uint8_t cram[32];
 
     fs::FS *_fs;
     fs::File _file;
 
+    bool allowBM = false;
+    bool allowDrawASC = false;
+
+    //x,y,w,h,buf,color[2]
+    using lcdDrawBMCallBack_t = void(int16_t, int16_t, int16_t, int16_t, uint8_t *, ChineseColor_t);
+    //x,y,color
+    using lcdDrawPixel_t = void(int16_t, int16_t, uint16_t);
+    //x,y,ascii,color[2]
+    using lcdDrawAsc = void(int16_t, int16_t, char, ChineseColor_t);
+
+    //high level :use device draw BM
+    lcdDrawBMCallBack_t *_lcdDrawBM;
+    //Low level : draw pixel
+    lcdDrawPixel_t *_lcdDrawPixel;
+    //x,y,ascii,color[2]
+    lcdDrawAsc *_lcdDrawAsc;
+
+    ChineseColor_t _c;
+    uint8_t AsciiDX = 0;
+    uint8_t AsciiDY = 0;
+    int16_t Cur_x = 0;
+    int16_t Cur_y = 0;
+    int16_t LCD_W = 0x7fff;
+
 public:
     void init(fs::FS *f);
-    uint8_t *getCharXBM(uint16_t gbk);
+    uint8_t *getCharBM(uint16_t gbk);
 
     uint8_t openCharSet(const char *path);
     uint8_t closeCharSet();
+
+    /*==========================gbk only api============================*/
+    //gbk
+    void printGBK(uint16_t);
+    //x,y,gbk
+    void printGBK(int16_t, int16_t, uint16_t);
+
+    //disp
+    void setLCD_W(int16_t w)
+    {
+        LCD_W = w;
+    }
+    void setCursor(int16_t x, int16_t y)
+    {
+        Cur_x = x;
+        Cur_y = y;
+    }
+    int16_t getCursorX() { return Cur_x; }
+    int16_t getCursorY() { return Cur_y; }
+    void setAsciiPrg(uint8_t dx, uint8_t dy)
+    {
+        AsciiDX = dx;
+        AsciiDY = dy;
+    }
+    void setTextColor(uint16_t fgcolor, uint16_t bgcolor)
+    {
+        _c.bg = bgcolor;
+        _c.fg = fgcolor;
+    }
+    //set callback
+    void setBMCallback(lcdDrawBMCallBack_t *cb)
+    {
+        _lcdDrawBM = cb;
+        allowBM = true;
+    }
+    void setDrawPixelCallback(lcdDrawPixel_t *cb)
+    {
+        _lcdDrawPixel = cb;
+    }
+    //asc
+    void setDrawASCCallback(lcdDrawAsc *cb)
+    {
+        _lcdDrawAsc = cb;
+        allowDrawASC = true;
+    }
+
+    //finally main api
+    void printString(const char * c);
+    void printString(String c);
 };

@@ -27,6 +27,26 @@ TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
 #define TFT_GREY 0x5AEB // New colour
 ChineseFS hz;
 
+void drawBMCallback(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t *buf, ChineseColor_t c)
+{
+  tft.drawBitmap(x, y, buf, w, h, c.fg, c.bg);
+}
+
+// void drawPixelCallBack(int16_t x, int16_t y, uint16_t c)
+// {
+//   tft.drawPixel(x, y, c);
+// }
+
+void drawASCCallback(int16_t x, int16_t y, char asc, ChineseColor_t c)
+{
+  //tft.drawChar(x, y, asc, c.fg, c.bg, tft.textfont);
+  //tft.drawChar(asc,x,y);
+  tft.setTextColor(c.fg, c.bg);
+  tft.setCursor(hz.getCursorX(), hz.getCursorY(), 2);
+  tft.print(asc);
+  hz.setCursor(tft.getCursorX(), tft.getCursorY());
+}
+
 void setup(void)
 {
 
@@ -39,38 +59,26 @@ void setup(void)
 
   hz.init(&SPIFFS);
 
+  hz.setLCD_W(320);
+  hz.setAsciiPrg(8, 16);
+  hz.setDrawASCCallback(drawASCCallback);
+  hz.setBMCallback(drawBMCallback);
+  //hz.setDrawPixelCallback(drawPixelCallBack);
+
   tft.init();
   tft.setRotation(3);
   tft.fillScreen(0x0000);
-  pinMode(14, OUTPUT);
-  digitalWrite(14, 1);
+  pinMode(21, OUTPUT);
+  digitalWrite(21, 1);
 }
 
 void loop()
 {
-  uint16_t iii;
-
   hz.openCharSet("/chineseSong.bin");
-
-  for (uint16_t j = 0; j < 10; j++)
-  {
-    for (uint16_t i = 0; i < 10; i++)
-    {
-      iii = gb1[(2 * i)];
-      iii <<= 8;
-      iii |= gb1[(2 * i) + 1];
-      uint16_t fg = random(0xffff);
-      uint16_t bg = random(0xffff);
-      tft.drawBitmap((i * 16), (j*16), hz.getCharXBM(iii), 16, 16, fg,bg);
-    }
-  }
-
+  hz.setCursor(1, 10);
+  hz.setTextColor(0xffff, 0x0000);
+  hz.printString(gb1);
+  hz.printString(gbstr);
   hz.closeCharSet();
-
-  // for (size_t j = 0; j < 10; j++)
-  // {
-  //   writeGBK(SPIFFS, "/chineseSong.bin", 0, (j * 16), 16, gb1, 10);
-  // }
-delay(200);
-  //tft.fillScreen(0x0000);
+  delay(1);
 }
