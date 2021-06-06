@@ -18,7 +18,7 @@
 #include "ChineseFS.h"
 
 #include "FS.h"
-#include "SPIFFS.h"
+
 #include "gbkstr.h"
 #define FORMAT_SPIFFS_IF_FAILED true
 
@@ -31,7 +31,7 @@ void setup(void)
 {
 
   Serial.begin(115200);
-  if (!SPIFFS.begin(FORMAT_SPIFFS_IF_FAILED))
+  if (!SPIFFS.begin())
   {
     Serial.println("SPIFFS Mount Failed");
     return;

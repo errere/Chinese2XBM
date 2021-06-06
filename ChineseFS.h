@@ -1,7 +1,6 @@
 #include <inttypes.h>
 #include <Arduino.h>
 #include "FS.h"
-#include "SPIFFS.h"
 
 //16BIT config
 #define BYTE_EACH_ROW 2
@@ -10,7 +9,7 @@
 class ChineseFS
 {
 private:
-    const uint8_t symoffset[9] PROGMEM = {
+    const uint8_t symoffset[9]  = {
         0, //a1
         1, //2
         2, //3
@@ -22,7 +21,7 @@ private:
         11 //a9
     };
 
-    const uint16_t gbkCharSetOffset[84] PROGMEM = {
+    const uint16_t gbkCharSetOffset[84]  = {
         //a1...a9
         //0
         0,
