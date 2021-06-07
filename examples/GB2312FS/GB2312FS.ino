@@ -32,10 +32,10 @@ void drawBMCallback(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t *buf, Ch
   tft.drawXBitmap(x, y, buf, w, h, c.fg, c.bg);
 }
 
-// void drawPixelCallBack(int16_t x, int16_t y, uint16_t c)
-// {
-//   tft.drawPixel(x, y, c);
-// }
+void drawPixelCallBack(int16_t x, int16_t y, uint16_t c)
+{
+  tft.drawPixel(x, y, c);
+}
 
 void drawASCCallback(int16_t x, int16_t y, char asc, ChineseColor_t c)
 {
@@ -62,8 +62,8 @@ void setup(void)
   hz.setLCD_W(320);
   hz.setAsciiPrg(8, 16);
   hz.setDrawASCCallback(drawASCCallback);
-  hz.setBMCallback(drawBMCallback);
-  //hz.setDrawPixelCallback(drawPixelCallBack);
+  //hz.setBMCallback(drawBMCallback);
+  hz.setDrawPixelCallback(drawPixelCallBack);
 
   tft.init();
   tft.setRotation(3);

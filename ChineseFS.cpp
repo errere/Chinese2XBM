@@ -272,7 +272,7 @@ void ChineseFS::drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t 
     {
         for (i = 0; i < w; i++)
         {
-            if (pgm_read_byte(bitmap + j * byteWidth + i / 8) & (128 >> (i & 7)))
+            if (pgm_read_byte(bitmap + j * byteWidth + i / 8) & (1 << (i & 7)))
                 _lcdDrawPixel(x + i, y + j, color);
             else
                 _lcdDrawPixel(x + i, y + j, bgcolor);
