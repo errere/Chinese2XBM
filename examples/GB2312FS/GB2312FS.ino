@@ -29,7 +29,7 @@ ChineseFS hz;
 
 void drawBMCallback(int16_t x, int16_t y, int16_t w, int16_t h, uint8_t *buf, ChineseColor_t c)
 {
-  tft.drawBitmap(x, y, buf, w, h, c.fg, c.bg);
+  tft.drawXBitmap(x, y, buf, w, h, c.fg, c.bg);
 }
 
 // void drawPixelCallBack(int16_t x, int16_t y, uint16_t c)
@@ -74,7 +74,7 @@ void setup(void)
 
 void loop()
 {
-  hz.openCharSet("/chineseSong.bin");
+  hz.openCharSet("/GBK.bin");
   hz.setCursor(1, 10);
   hz.setTextColor(0xffff, 0x0000);
   hz.printString(gb1);

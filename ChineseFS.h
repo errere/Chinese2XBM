@@ -131,7 +131,8 @@ private:
     };
 
     uint32_t getGBKIndex(uint16_t gbk);
-
+    uint32_t getGB2312Index(uint16_t gbk);
+    uint32_t getGBKIndexDEBUG(uint16_t gbk);
     void drawBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h, uint16_t color, uint16_t bgcolor);
 
     uint8_t cram[32];
@@ -141,6 +142,14 @@ private:
 
     bool allowBM = false;
     bool allowDrawASC = false;
+
+    ChineseColor_t _c;
+
+    uint8_t AsciiDX = 0;
+    uint8_t AsciiDY = 0;
+    int16_t Cur_x = 0;
+    int16_t Cur_y = 0;
+    int16_t LCD_W = 0x7fff;
 
     //x,y,w,h,buf,color[2]
     using lcdDrawBMCallBack_t = void(int16_t, int16_t, int16_t, int16_t, uint8_t *, ChineseColor_t);
@@ -155,13 +164,6 @@ private:
     lcdDrawPixel_t *_lcdDrawPixel;
     //x,y,ascii,color[2]
     lcdDrawAsc *_lcdDrawAsc;
-
-    ChineseColor_t _c;
-    uint8_t AsciiDX = 0;
-    uint8_t AsciiDY = 0;
-    int16_t Cur_x = 0;
-    int16_t Cur_y = 0;
-    int16_t LCD_W = 0x7fff;
 
 public:
     void init(fs::FS *f);
@@ -216,6 +218,6 @@ public:
     }
 
     //finally main api
-    void printString(const char * c);
+    void printString(const char *c);
     void printString(String c);
 };
