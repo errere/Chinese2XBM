@@ -14,12 +14,11 @@ uint8_t *ChineseFS::getCharBM(uint16_t gbk)
 uint8_t ChineseFS::openCharSet(const char *path)
 {
     _file = _fs->open(path, "r");
-    return 0;
+    return _file;
 }
 uint8_t ChineseFS::closeCharSet()
 {
-    _file.close();
-    return 0;
+    return _file.close();
 }
 
 /*==========================gbk only api============================*/
