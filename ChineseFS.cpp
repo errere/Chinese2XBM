@@ -18,7 +18,8 @@ uint8_t ChineseFS::openCharSet(const char *path)
 }
 uint8_t ChineseFS::closeCharSet()
 {
-    return _file.close();
+    _file.close();
+    return 1;
 }
 
 /*==========================gbk only api============================*/
